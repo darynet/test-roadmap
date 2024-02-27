@@ -1,0 +1,30 @@
+eventdata = parse_key_value!(.message)
+
+. |= parse_regex!(eventdata.msg[0], r'audit\((?P<timestamp>\d{10})')
+.timestamp = from_unix_timestamp!(to_int!(.timestamp))
+
+.event_host = eventdata.node
+
+if eventdata.addr != "?" {
+	.src_ip = eventdata.addr
+}
+if eventdata.hostname != "?" {
+	.src_hostname = eventdata.hostname
+}
+
+if eventdata.terminal != "?" {
+	.logon_type = eventdata.terminal
+}
+
+.status = eventdata.res
+
+.severity = "info"
+
+.event_type=eventdata.type
+
+.user.id = eventdata.auid
+.user.name = eventdata.AUID
+
+.vendor = "unix_like"
+.title = "unix_like"
+.subsys = "auditd"

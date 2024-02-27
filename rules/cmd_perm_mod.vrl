@@ -1,0 +1,24 @@
+eventdata = parse_key_value!(.message)
+
+. |= parse_regex!(eventdata.msg, r'audit\((?P<timestamp>\d{10})')
+.timestamp = from_unix_timestamp!(to_int!(.timestamp))
+
+.event_host = eventdata.node
+
+.severity = "medium"
+
+.event_type = eventdata.type
+
+if eventdata.success == "yes" {
+    .status = "success"
+} else {
+    .status = "failure"
+}
+
+.cmd = eventdata.comm
+
+.subject.id = eventdata.auid
+
+.vendor = "unix_like"
+.title = "unix_like"
+.subsys = "auditd"
